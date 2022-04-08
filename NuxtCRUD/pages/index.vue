@@ -1,6 +1,11 @@
 <template>
   <div class="container pd-40">
     <h3 class="text-center m-3">Post Lists</h3>
+    <div class="d-flex justify-content-center mb-4">
+      <input type="text" class="form-control w-400" @keyup="isClear" placeholder="Search by User ID" v-model="user_id">
+      <button class="btn btn-primary" @click="search">Search</button>
+    </div>
+    
     <table class="table table-hover">
       <thead>
         <tr>
@@ -29,15 +34,29 @@ export default {
   name: 'IndexPage',
   data() {
     return {
-      posts: []
+      posts: [],
+      user_id: ''
     }
   },
-  async fetch () {
-    this.posts = await fetch(
-      'https://jsonplaceholder.typicode.com/posts'
-    ).then(res => res.json())
+  created:function () {
+    this.getAll();
   },
   methods: {
+    async getAll() {
+      this.posts = await fetch(
+        'https://jsonplaceholder.typicode.com/posts'
+      ).then((res) => res.json())
+    },
+    async search(){
+      this.posts = await fetch(
+        'https://jsonplaceholder.typicode.com/posts?userId='+this.user_id
+      ).then((res) => res.json())
+    },
+    isClear() {
+      if(!this.user_id) {
+        this.getAll();
+      }
+    },
     deletePost(id) {
       fetch('https://jsonplaceholder.typicode.com/posts/'+id, {
         method: 'DELETE',
@@ -51,5 +70,9 @@ export default {
 <style>
   .pd-40 {
     padding: 0 40px;
+  }
+  .w-400 {
+    width: 400px;
+    margin-right: 30px;
   }
 </style>
